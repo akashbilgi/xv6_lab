@@ -23,6 +23,20 @@ struct {
   struct run *freelist;
 } kmem;
 
+// func : ret no of d freepages
+int
+k_free_pgs()
+{
+    int t = 0;
+    struct run *r;
+    acquire(&kmem.lock);
+    for (r = kmem.freelist; r > 0; r = r->next) {
+        t++;
+    }
+    release(&kmem.lock);
+    return t;
+}
+
 void
 kinit()
 {

@@ -15,6 +15,47 @@ sys_exit(void)
   return 0;  // not reached
 }
 
+uint64 sys_info(void)
+{
+    int n;
+    argint(0, &n);
+    uint64 result = -1; // Default return value for unsupported cases
+
+    if (n == 0) {
+        result = proc_counts();
+    }
+    else if (n == 1) {
+        result = sys_count;
+    }
+    else if (n == 2) {
+        result = k_free_pgs();
+    }
+
+    return result;
+}
+
+
+uint64 sys_procinfo(void)
+{
+    uint64 ptr;
+    argaddr(0, &ptr);
+    struct proc *p = myproc();
+
+    int temp;
+    if ((p->sz) % PGSIZE == 0)
+        temp = p->sz / PGSIZE;
+    else
+        temp = p->sz / PGSIZE + 1;
+
+    if (copyout(p->pagetable, ptr, (char *) &(p->parent->pid), sizeof(p->parent->pid)) < 0 ||
+        copyout(p->pagetable, ptr + 4, (char *) &(p->curr_proc), sizeof(p->curr_proc)) < 0 ||
+        copyout(p->pagetable, ptr + 8, (char *) &temp, sizeof(p->sz)) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
 uint64
 sys_getpid(void)
 {

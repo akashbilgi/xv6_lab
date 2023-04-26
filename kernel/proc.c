@@ -43,6 +43,18 @@ proc_mapstacks(pagetable_t kpgtbl)
   }
 }
 
+
+int   proc_counts  (void)
+{
+  struct proc *p;
+  int c = 0;
+  for(p = proc; p < &proc[NPROC]; p++){
+    if(p->state != UNUSED)
+      c++;
+  }
+  return c;
+}
+
 // initialize the proc table.
 void
 procinit(void)
